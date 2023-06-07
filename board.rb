@@ -1,3 +1,5 @@
+require_relative 'card.rb'
+
 class Board
     def initialize(size=4)
         # @cards = []
@@ -15,7 +17,7 @@ class Board
         @grid[row][col] = value
     end
 
-    def populate ()       
+    def get_values
         alpha = ("a".."z").to_a
         numofpairs = @boardsize / 2 
         pairsarray = []
@@ -24,29 +26,30 @@ class Board
                 pairsarray << alpha[i]
             end
         end   
-        puts pairsarray
-        puts pairsarray.size.to_s + "!!!"
+        pairsarray
+    end
 
-        (0...@boardsize).each do |idx|       
-            while countCards < @boardsize do
-                    
-                    # rand_row = rand(0...@grid.length)
-                    # rand_col = rand(0...@grid.length)
-                    # pos = [rand_row,rand_col]
-                    pos = checknil
-                       self[pos] = pairsarray[idx] 
-                    # end          
+    def populate()
+        diff_cards = self.get_values
+        while countCards < @boardsize do 
+            (0...@boardsize).each do |idx|   
+                stop_loop = false    
+                until stop_loop do
+                    open_spot = find_empty_spot
+                    if open_spot != nil
+                 self[open_spot] = Card.new(diff_cards[idx])
+                 stop_loop = true   
+                    end 
+                end 
             end
         end
-
     end
        
-    def checknil  # return true if cards is placed
+    def find_empty_spot  # return true if cards is placed
         rand_row = rand(0...@grid.length)
         rand_col = rand(0...@grid.length)
         pos = [rand_row,rand_col] 
-         
-        return pos if self[pos] ==nil
+        return pos if self[pos] == nil
     end
 
     def countCards
@@ -54,8 +57,28 @@ class Board
     end
 
     def render ()
-        p @grid
+        result = ''
+        (0...@grid.length).each do |i|
+            result += ' '+ i.to_s
+        end
+        puts ' '+ result
+        @grid.each_with_index do |row, i|
+            print i.to_s
+         row.each do |ele| 
+            print " " + ele.to_s
+           end
+        end
     end
+
+    def hidden_values_grid
+        @grid.map do |array|
+         array.map do |ele|
+             if ele != nil        
+                 '?'
+             end
+         end
+        end
+      end
 
     # def won?()
     #     @grid.all? do |row|
@@ -66,7 +89,8 @@ class Board
         
     # end
     
-    def reveal()
-        
+    def reveal(pos1)
+        if @grid[pos1] == false
+        end
     end
 end
